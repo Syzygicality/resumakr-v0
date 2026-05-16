@@ -1,0 +1,376 @@
+{
+  "$defs": {
+    "EducationSection": {
+      "properties": {
+        "title": {
+          "default": "Education",
+          "title": "Title",
+          "type": "string"
+        },
+        "educations": {
+          "items": {
+            "$ref": "#/$defs/EducationSubSection"
+          },
+          "title": "Educations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "educations"
+      ],
+      "title": "EducationSection",
+      "type": "object"
+    },
+    "EducationSubSection": {
+      "properties": {
+        "institution": {
+          "title": "Institution",
+          "type": "string"
+        },
+        "degree": {
+          "title": "Degree",
+          "type": "string"
+        },
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "start_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Start Date"
+        },
+        "end_date": {
+          "title": "End Date",
+          "type": "string"
+        },
+        "relevant_coursework": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": [],
+          "title": "Relevant Coursework"
+        },
+        "gpa": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Gpa"
+        }
+      },
+      "required": [
+        "institution",
+        "degree",
+        "location",
+        "end_date",
+        "gpa"
+      ],
+      "title": "EducationSubSection",
+      "type": "object"
+    },
+    "ExperienceSection": {
+      "properties": {
+        "title": {
+          "default": "Work Experience",
+          "title": "Title",
+          "type": "string"
+        },
+        "experiences": {
+          "items": {
+            "$ref": "#/$defs/ExperienceSubSection"
+          },
+          "title": "Experiences",
+          "type": "array"
+        }
+      },
+      "required": [
+        "experiences"
+      ],
+      "title": "ExperienceSection",
+      "type": "object"
+    },
+    "ExperienceSubSection": {
+      "properties": {
+        "position": {
+          "title": "Position",
+          "type": "string"
+        },
+        "company": {
+          "title": "Company",
+          "type": "string"
+        },
+        "location": {
+          "default": "Remote",
+          "title": "Location",
+          "type": "string"
+        },
+        "start_date": {
+          "title": "Start Date",
+          "type": "string"
+        },
+        "end_date": {
+          "default": "Present",
+          "title": "End Date",
+          "type": "string"
+        },
+        "bullet_points": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Bullet Points",
+          "type": "array"
+        }
+      },
+      "required": [
+        "position",
+        "company",
+        "start_date",
+        "bullet_points"
+      ],
+      "title": "ExperienceSubSection",
+      "type": "object"
+    },
+    "Link": {
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "title": "Link",
+      "type": "object"
+    },
+    "ProjectSection": {
+      "properties": {
+        "title": {
+          "default": "Projects",
+          "title": "Title",
+          "type": "string"
+        },
+        "projects": {
+          "items": {
+            "$ref": "#/$defs/ProjectSubSection"
+          },
+          "title": "Projects",
+          "type": "array"
+        }
+      },
+      "required": [
+        "projects"
+      ],
+      "title": "ProjectSection",
+      "type": "object"
+    },
+    "ProjectSubSection": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "secondary_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Secondary Name"
+        },
+        "skills": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Skills",
+          "type": "array"
+        },
+        "link": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Link"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "bullet_points": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Bullet Points",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "skills",
+        "bullet_points"
+      ],
+      "title": "ProjectSubSection",
+      "type": "object"
+    },
+    "SkillList": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "skills": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Skills",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "skills"
+      ],
+      "title": "SkillList",
+      "type": "object"
+    },
+    "SkillSection": {
+      "properties": {
+        "title": {
+          "default": "Technical Skills",
+          "title": "Title",
+          "type": "string"
+        },
+        "skill_lists": {
+          "items": {
+            "$ref": "#/$defs/SkillList"
+          },
+          "title": "Skill Lists",
+          "type": "array"
+        }
+      },
+      "required": [
+        "skill_lists"
+      ],
+      "title": "SkillSection",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "phone_number": {
+      "format": "phone",
+      "title": "Phone Number",
+      "type": "string"
+    },
+    "email": {
+      "format": "email",
+      "title": "Email",
+      "type": "string"
+    },
+    "socials": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/Link"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": [],
+      "title": "Socials"
+    },
+    "education": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EducationSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "skills": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SkillSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "experience": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExperienceSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "projects": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProjectSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "name",
+    "phone_number",
+    "email"
+  ],
+  "title": "Resume",
+  "type": "object"
+}

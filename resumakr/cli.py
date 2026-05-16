@@ -38,6 +38,18 @@ def precommit():
 
 
 @app.command()
+def schema():
+    """Generate resume.schema.json from the Resume model."""
+    import json
+    from resumakr.schemas import Resume
+
+    root = Path(ROOT_DIR)
+    schema_path = root / "resumakr" / "resume.schema.json"
+    schema_path.write_text(json.dumps(Resume.model_json_schema(), indent=2) + "\n")
+    typer.echo(f"Written to {schema_path}")
+
+
+@app.command()
 def compile():
     """Compile resume.tex via the local LaTeX API and write resume.pdf."""
     start = perf_counter()

@@ -2,6 +2,12 @@
   "files.associations": {
     "resume.json": "jsonc"
   },
+  "json.schemas": [
+    {
+      "fileMatch": ["resume.json"],
+      "url": "./resumakr/resume.schema.json"
+    }
+  ],
   "[json]": {
     "editor.tabSize": 2,
     "editor.insertSpaces": true
