@@ -1,7 +1,9 @@
 import typer
 import subprocess
+import httpx
 
 from pathlib import Path
+from time import perf_counter
 
 app = typer.Typer(help="Resumakr CLI")
 
@@ -33,6 +35,32 @@ def precommit():
     result = subprocess.run(["pre-commit", "run", "--all-files"])
     if result.returncode != 0:
         subprocess.run(["pre-commit", "run", "--all-files"])
+
+
+@app.command()
+def compile():
+    """Compile resume.tex via the local LaTeX API and write resume.pdf."""
+    start = perf_counter()
+    root = Path(ROOT_DIR)
+    tex_path = root / "resume.tex"
+    pdf_path = root / "resume.pdf"
+
+    if not tex_path.exists():
+        typer.echo(f"Error: {tex_path} not found", err=True)
+        raise typer.Exit(1)
+
+    source = tex_path.read_text()
+    response = httpx.post("http://localhost:8000/compile", json={"source": source})
+
+    if response.status_code != 200:
+        typer.echo(
+            f"Compile error:\n{response.json().get('detail', response.text)}", err=True
+        )
+        raise typer.Exit(1)
+
+    pdf_path.write_bytes(response.content)
+    end = perf_counter()
+    typer.echo(f"Written to {pdf_path} in {(end - start) * 1000:.2f} ms.")
 
 
 if __name__ == "__main__":
