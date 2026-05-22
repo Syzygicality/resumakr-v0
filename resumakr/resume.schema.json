@@ -297,7 +297,6 @@
       "type": "string"
     },
     "phone_number": {
-      "format": "phone",
       "title": "Phone Number",
       "type": "string"
     },
@@ -320,6 +319,25 @@
       ],
       "default": [],
       "title": "Socials"
+    },
+    "section_order": {
+      "default": [
+        "education",
+        "skills",
+        "experience",
+        "projects"
+      ],
+      "items": {
+        "enum": [
+          "education",
+          "skills",
+          "experience",
+          "projects"
+        ],
+        "type": "string"
+      },
+      "title": "Section Order",
+      "type": "array"
     },
     "education": {
       "anyOf": [

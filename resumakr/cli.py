@@ -1,6 +1,7 @@
 import typer
 import subprocess
 import httpx
+import yaml
 
 from pathlib import Path
 from time import perf_counter
@@ -47,6 +48,28 @@ def schema():
     schema_path = root / "resumakr" / "resume.schema.json"
     schema_path.write_text(json.dumps(Resume.model_json_schema(), indent=2) + "\n")
     typer.echo(f"Written to {schema_path}")
+
+
+@app.command()
+def validate(
+    resume: Path = typer.Argument(
+        Path("resume.yaml"), help="Path to the YAML resume file."
+    ),
+):
+    """Validate a YAML resume file against the Resume schema."""
+    from resumakr.schemas import Resume
+
+    if not resume.exists():
+        typer.echo(f"Error: {resume} not found", err=True)
+        raise typer.Exit(1)
+
+    raw = yaml.safe_load(resume.read_text())
+    try:
+        Resume.model_validate(raw)
+        typer.echo(f"{resume} is valid.")
+    except Exception as exc:
+        typer.echo(f"Validation error:\n{exc}", err=True)
+        raise typer.Exit(1)
 
 
 @app.command()

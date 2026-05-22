@@ -1,7 +1,6 @@
 from pydantic import BaseModel, EmailStr
-from pydantic_extra_types.phone_numbers import PhoneNumber
 
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 
 class Link(BaseModel):
@@ -63,9 +62,15 @@ class EducationSection(BaseModel):
 
 class Resume(BaseModel):
     name: str
-    phone_number: PhoneNumber
+    phone_number: str
     email: EmailStr
     socials: Optional[List[Link]] = []
+    section_order: List[Literal["education", "skills", "experience", "projects"]] = [
+        "education",
+        "skills",
+        "experience",
+        "projects",
+    ]
     education: Optional[EducationSection] = None
     skills: Optional[SkillSection] = None
     experience: Optional[ExperienceSection] = None
