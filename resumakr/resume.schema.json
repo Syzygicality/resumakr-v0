@@ -1,5 +1,87 @@
 {
   "$defs": {
+    "CertSection": {
+      "properties": {
+        "title": {
+          "default": "Professional Certificates",
+          "title": "Title",
+          "type": "string"
+        },
+        "certifications": {
+          "items": {
+            "$ref": "#/$defs/CertSubsection"
+          },
+          "title": "Certifications",
+          "type": "array"
+        }
+      },
+      "required": [
+        "certifications"
+      ],
+      "title": "CertSection",
+      "type": "object"
+    },
+    "CertSubsection": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "issuer": {
+          "title": "Issuer",
+          "type": "string"
+        },
+        "link": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Link"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "start_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Start Date"
+        },
+        "end_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "End Date"
+        },
+        "bullet_points": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Bullet Points",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "issuer"
+      ],
+      "title": "CertSubsection",
+      "type": "object"
+    },
     "EducationSection": {
       "properties": {
         "title": {
@@ -9,7 +91,7 @@
         },
         "educations": {
           "items": {
-            "$ref": "#/$defs/EducationSubSection"
+            "$ref": "#/$defs/EducationSubsection"
           },
           "title": "Educations",
           "type": "array"
@@ -21,7 +103,7 @@
       "title": "EducationSection",
       "type": "object"
     },
-    "EducationSubSection": {
+    "EducationSubsection": {
       "properties": {
         "institution": {
           "title": "Institution",
@@ -75,6 +157,7 @@
               "type": "null"
             }
           ],
+          "default": null,
           "title": "Gpa"
         }
       },
@@ -82,10 +165,9 @@
         "institution",
         "degree",
         "location",
-        "end_date",
-        "gpa"
+        "end_date"
       ],
-      "title": "EducationSubSection",
+      "title": "EducationSubsection",
       "type": "object"
     },
     "ExperienceSection": {
@@ -97,7 +179,7 @@
         },
         "experiences": {
           "items": {
-            "$ref": "#/$defs/ExperienceSubSection"
+            "$ref": "#/$defs/ExperienceSubsection"
           },
           "title": "Experiences",
           "type": "array"
@@ -109,7 +191,7 @@
       "title": "ExperienceSection",
       "type": "object"
     },
-    "ExperienceSubSection": {
+    "ExperienceSubsection": {
       "properties": {
         "position": {
           "title": "Position",
@@ -134,6 +216,7 @@
           "type": "string"
         },
         "bullet_points": {
+          "default": [],
           "items": {
             "type": "string"
           },
@@ -144,10 +227,9 @@
       "required": [
         "position",
         "company",
-        "start_date",
-        "bullet_points"
+        "start_date"
       ],
-      "title": "ExperienceSubSection",
+      "title": "ExperienceSubsection",
       "type": "object"
     },
     "Link": {
@@ -184,7 +266,7 @@
         },
         "projects": {
           "items": {
-            "$ref": "#/$defs/ProjectSubSection"
+            "$ref": "#/$defs/ProjectSubsection"
           },
           "title": "Projects",
           "type": "array"
@@ -196,7 +278,7 @@
       "title": "ProjectSection",
       "type": "object"
     },
-    "ProjectSubSection": {
+    "ProjectSubsection": {
       "properties": {
         "name": {
           "title": "Name",
@@ -233,6 +315,7 @@
           "default": null
         },
         "bullet_points": {
+          "default": [],
           "items": {
             "type": "string"
           },
@@ -242,11 +325,21 @@
       },
       "required": [
         "name",
-        "skills",
-        "bullet_points"
+        "skills"
       ],
-      "title": "ProjectSubSection",
+      "title": "ProjectSubsection",
       "type": "object"
+    },
+    "Section": {
+      "enum": [
+        "education",
+        "skills",
+        "experience",
+        "projects",
+        "certs"
+      ],
+      "title": "Section",
+      "type": "string"
     },
     "SkillList": {
       "properties": {
@@ -325,16 +418,11 @@
         "education",
         "skills",
         "experience",
-        "projects"
+        "projects",
+        "certs"
       ],
       "items": {
-        "enum": [
-          "education",
-          "skills",
-          "experience",
-          "projects"
-        ],
-        "type": "string"
+        "$ref": "#/$defs/Section"
       },
       "title": "Section Order",
       "type": "array"
@@ -376,6 +464,17 @@
       "anyOf": [
         {
           "$ref": "#/$defs/ProjectSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "certs": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CertSection"
         },
         {
           "type": "null"

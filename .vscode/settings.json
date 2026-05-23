@@ -1,6 +1,6 @@
 {
   "yaml.schemas": {
-    "./resumakr/resume.schema.json": "resume.yaml"
+    "./resumakr/resume.schema.json": ["resume.yaml", "resume.master.yaml"]
   },
   "[yaml]": {
     "editor.tabSize": 2,

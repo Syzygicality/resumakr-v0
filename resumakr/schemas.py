@@ -1,6 +1,15 @@
 from pydantic import BaseModel, EmailStr, model_validator
-from typing import List, Optional, Literal, Any
+from typing import List, Optional, Any
+from enum import StrEnum
 import re
+
+
+class Section(StrEnum):
+    EDUCATION = "education"
+    SKILLS = "skills"
+    EXPERIENCE = "experience"
+    PROJECTS = "projects"
+    CERTS = "certs"
 
 
 class BulletPointMixin(BaseModel):
@@ -93,13 +102,7 @@ class Resume(BaseModel):
     phone_number: str
     email: EmailStr
     socials: Optional[List[Link]] = []
-    section_order: List[Literal["education", "skills", "experience", "projects"]] = [
-        "education",
-        "skills",
-        "experience",
-        "projects",
-        "certs",
-    ]
+    section_order: list[Section] = list(Section)
     education: Optional[EducationSection] = None
     skills: Optional[SkillSection] = None
     experience: Optional[ExperienceSection] = None
