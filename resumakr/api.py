@@ -1,4 +1,3 @@
-# latex_service.py
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel
