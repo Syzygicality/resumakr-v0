@@ -39,8 +39,7 @@
             {
               "type": "null"
             }
-          ],
-          "default": null
+          ]
         },
         "start_date": {
           "anyOf": [
@@ -51,7 +50,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Start Date"
         },
         "end_date": {
@@ -63,21 +61,30 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "End Date"
         },
         "bullet_points": {
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "title": "Bullet Points",
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Bullet Points"
         }
       },
       "required": [
         "name",
-        "issuer"
+        "issuer",
+        "link",
+        "start_date",
+        "end_date",
+        "bullet_points"
       ],
       "title": "CertSubsection",
       "type": "object"
@@ -126,7 +133,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Start Date"
         },
         "end_date": {
@@ -165,6 +171,7 @@
         "institution",
         "degree",
         "location",
+        "start_date",
         "end_date"
       ],
       "title": "EducationSubsection",
@@ -216,7 +223,6 @@
           "type": "string"
         },
         "bullet_points": {
-          "default": [],
           "items": {
             "type": "string"
           },
@@ -227,7 +233,8 @@
       "required": [
         "position",
         "company",
-        "start_date"
+        "start_date",
+        "bullet_points"
       ],
       "title": "ExperienceSubsection",
       "type": "object"
@@ -247,6 +254,9 @@
           "title": "Name"
         },
         "url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
           "title": "Url",
           "type": "string"
         }
@@ -293,15 +303,7 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Secondary Name"
-        },
-        "skills": {
-          "items": {
-            "type": "string"
-          },
-          "title": "Skills",
-          "type": "array"
         },
         "link": {
           "anyOf": [
@@ -311,11 +313,16 @@
             {
               "type": "null"
             }
-          ],
-          "default": null
+          ]
+        },
+        "skills": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Skills",
+          "type": "array"
         },
         "bullet_points": {
-          "default": [],
           "items": {
             "type": "string"
           },
@@ -325,9 +332,120 @@
       },
       "required": [
         "name",
-        "skills"
+        "secondary_name",
+        "link",
+        "skills",
+        "bullet_points"
       ],
       "title": "ProjectSubsection",
+      "type": "object"
+    },
+    "ResumeContent": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "phone_number": {
+          "title": "Phone Number",
+          "type": "string"
+        },
+        "email": {
+          "format": "email",
+          "title": "Email",
+          "type": "string"
+        },
+        "socials": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Link"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": [],
+          "title": "Socials"
+        },
+        "section_order": {
+          "default": [
+            "education",
+            "skills",
+            "experience",
+            "projects",
+            "certs"
+          ],
+          "items": {
+            "$ref": "#/$defs/Section"
+          },
+          "title": "Section Order",
+          "type": "array"
+        },
+        "education": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EducationSection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "skills": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SkillSection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "experience": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExperienceSection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "projects": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProjectSection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "certs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CertSection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "name",
+        "phone_number",
+        "email"
+      ],
+      "title": "ResumeContent",
       "type": "object"
     },
     "Section": {
@@ -385,108 +503,12 @@
     }
   },
   "properties": {
-    "name": {
-      "title": "Name",
-      "type": "string"
-    },
-    "phone_number": {
-      "title": "Phone Number",
-      "type": "string"
-    },
-    "email": {
-      "format": "email",
-      "title": "Email",
-      "type": "string"
-    },
-    "socials": {
-      "anyOf": [
-        {
-          "items": {
-            "$ref": "#/$defs/Link"
-          },
-          "type": "array"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": [],
-      "title": "Socials"
-    },
-    "section_order": {
-      "default": [
-        "education",
-        "skills",
-        "experience",
-        "projects",
-        "certs"
-      ],
-      "items": {
-        "$ref": "#/$defs/Section"
-      },
-      "title": "Section Order",
-      "type": "array"
-    },
-    "education": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/EducationSection"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null
-    },
-    "skills": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/SkillSection"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null
-    },
-    "experience": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ExperienceSection"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null
-    },
-    "projects": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/ProjectSection"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null
-    },
-    "certs": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/CertSection"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null
+    "resume": {
+      "$ref": "#/$defs/ResumeContent"
     }
   },
   "required": [
-    "name",
-    "phone_number",
-    "email"
+    "resume"
   ],
   "title": "Resume",
   "type": "object"

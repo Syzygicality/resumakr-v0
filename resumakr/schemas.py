@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, model_validator
+from pydantic import BaseModel, EmailStr, model_validator, HttpUrl
 from typing import List, Optional, Any
 from enum import StrEnum
 import re
@@ -28,7 +28,7 @@ class BulletPointMixin(BaseModel):
 
 class Link(BaseModel):
     name: Optional[str] = None
-    url: str
+    url: HttpUrl
 
 
 class SkillList(BaseModel):
@@ -47,7 +47,7 @@ class ExperienceSubsection(BulletPointMixin, BaseModel):
     location: str = "Remote"
     start_date: str
     end_date: str = "Present"
-    bullet_points: List[str] = []
+    bullet_points: List[str]
 
 
 class ExperienceSection(BaseModel):
@@ -57,10 +57,10 @@ class ExperienceSection(BaseModel):
 
 class ProjectSubsection(BulletPointMixin, BaseModel):
     name: str
-    secondary_name: Optional[str] = None
+    secondary_name: Optional[str]
+    link: Optional[Link]
     skills: List[str]
-    link: Optional[Link] = None
-    bullet_points: List[str] = []
+    bullet_points: List[str]
 
 
 class ProjectSection(BaseModel):
@@ -72,7 +72,7 @@ class EducationSubsection(BaseModel):
     institution: str
     degree: str
     location: str
-    start_date: Optional[str] = None
+    start_date: Optional[str]
     end_date: str
     relevant_coursework: Optional[List[str]] = []
     gpa: Optional[float] = None
@@ -86,10 +86,10 @@ class EducationSection(BaseModel):
 class CertSubsection(BulletPointMixin, BaseModel):
     name: str
     issuer: str
-    link: Optional[Link] = None
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
-    bullet_points: List[str] = []
+    link: Optional[Link]
+    start_date: Optional[str]
+    end_date: Optional[str]
+    bullet_points: Optional[List[str]]
 
 
 class CertSection(BaseModel):
@@ -97,7 +97,7 @@ class CertSection(BaseModel):
     certifications: List[CertSubsection]
 
 
-class Resume(BaseModel):
+class ResumeContent(BaseModel):
     name: str
     phone_number: str
     email: EmailStr
@@ -108,3 +108,7 @@ class Resume(BaseModel):
     experience: Optional[ExperienceSection] = None
     projects: Optional[ProjectSection] = None
     certs: Optional[CertSection] = None
+
+
+class Resume(BaseModel):
+    resume: ResumeContent
