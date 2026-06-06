@@ -1,3 +1,4 @@
+import re
 import typer
 import subprocess
 import httpx
@@ -70,6 +71,59 @@ def validate(
     except Exception as exc:
         typer.echo(f"Validation error:\n{exc}", err=True)
         raise typer.Exit(1)
+
+
+@app.command()
+def template():
+    """Render resume.tex from resume.yaml at the repo root."""
+    import jinja2
+    from resumakr.schemas import Resume
+
+    root = Path(ROOT_DIR)
+    resume_path = root / "resume.yaml"
+
+    if not resume_path.exists():
+        typer.echo(f"Error: {resume_path} not found", err=True)
+        raise typer.Exit(1)
+
+    raw = yaml.safe_load(resume_path.read_text())
+    try:
+        validated = Resume.model_validate(raw)
+    except Exception as exc:
+        typer.echo(f"Validation error:\n{exc}", err=True)
+        raise typer.Exit(1)
+
+    templates_dir = Path(__file__).parent / "templates"
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(templates_dir)),
+        block_start_string="((%",
+        block_end_string="%))",
+        variable_start_string="((",
+        variable_end_string="))",
+        comment_start_string="((#",
+        comment_end_string="#))",
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    # Bold conversion is already done by BulletPointMixin at validation time;
+    # this filter only needs to escape bare % signs for LaTeX.
+    env.filters["tex_bold"] = lambda s: re.sub(r"(?<!\\)%", r"\\%", str(s))
+    env.filters["display_url"] = lambda url: re.sub(
+        r"^https?://(www\.)?", "", str(url)
+    ).rstrip("/")
+
+    rendered = env.get_template("resume.tex.j2").render(resume=validated.resume)
+
+    out = root / "resume.tex"
+    out.write_text(rendered)
+    typer.echo(f"Written to {out}")
+
+
+@app.command()
+def build():
+    """Template and compile resume.yaml → resume.tex → resume.pdf."""
+    template()
+    compile()
 
 
 @app.command()
