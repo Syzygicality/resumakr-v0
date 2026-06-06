@@ -1,0 +1,9 @@
+%-----------TECHNICAL SKILLS-----------
+\section{(( resume.skills.title ))}
+  \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+((% for skill_list in resume.skills.skill_lists -%))
+      \textbf{(( skill_list.name ))}{: (( skill_list.skills | join(', ') ))} \\
+((% endfor -%))
+    }}
+  \end{itemize}

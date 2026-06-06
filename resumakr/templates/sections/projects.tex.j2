@@ -1,0 +1,20 @@
+%-----------PROJECTS-----------
+\section{(( resume.projects.title ))}
+  \resumeSubHeadingListStart
+((% for proj in resume.projects.projects -%))
+((% set proj_title = proj.name ~ ' (' ~ proj.secondary_name ~ ')' if proj.secondary_name else proj.name -%))
+
+((% if proj.link -%))
+    \resumeProjectHeading
+      {\href{(( proj.link.url ))}{\faLink} \textbf{(( proj_title ))} $|$ \emph{(( proj.skills | join(', ') ))}}{}
+((% else -%))
+    \resumeProjectHeading
+      {\textbf{(( proj_title ))} $|$ \emph{(( proj.skills | join(', ') ))}}{}
+((% endif -%))
+      \resumeItemListStart
+((% for bullet in proj.bullet_points -%))
+        \resumeItem{(( bullet | tex_bold ))}
+((% endfor -%))
+      \resumeItemListEnd
+((% endfor -%))
+  \resumeSubHeadingListEnd

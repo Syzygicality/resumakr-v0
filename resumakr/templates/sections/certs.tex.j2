@@ -1,0 +1,16 @@
+%-----------CERTIFICATIONS-----------
+\section{(( resume.certs.title ))}
+  \resumeSubHeadingListStart
+((% for cert in resume.certs.certifications -%))
+    \resumeSubheading
+      {(( cert.name ))}{(( (cert.start_date ~ ' - ' ~ cert.end_date) if cert.start_date else (cert.end_date or '') ))}
+      {(( cert.issuer ))}{}
+((% if cert.bullet_points -%))
+      \resumeItemListStart
+((% for bullet in cert.bullet_points -%))
+        \resumeItem{(( bullet | tex_bold ))}
+((% endfor -%))
+      \resumeItemListEnd
+((% endif -%))
+((% endfor -%))
+  \resumeSubHeadingListEnd

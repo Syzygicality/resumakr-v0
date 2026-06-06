@@ -1,0 +1,21 @@
+%-----------EDUCATION-----------
+\section{(( resume.education.title ))}
+  \resumeSubHeadingListStart
+((% for edu in resume.education.educations -%))
+    \resumeSubheading
+      {(( edu.institution ))}{(( edu.location ))}
+      {(( edu.degree ))}{(( (edu.start_date ~ ' - ' ~ edu.end_date) if edu.start_date else edu.end_date ))}
+((% endfor -%))
+  \resumeSubHeadingListEnd
+((% for edu in resume.education.educations if edu.relevant_coursework -%))
+  \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+((% if edu.gpa -%))
+     \textbf{Relevant Coursework}{: (( edu.relevant_coursework | join(', ') ))} \\
+     \textbf{GPA}{: (( edu.gpa ))}
+((% else -%))
+     \textbf{Relevant Coursework}{: (( edu.relevant_coursework | join(', ') ))}
+((% endif %))
+    }}
+  \end{itemize}
+((% endfor -%))

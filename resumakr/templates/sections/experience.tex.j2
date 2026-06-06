@@ -1,0 +1,17 @@
+%-----------EXPERIENCE-----------
+\section{(( resume.experience.title ))}
+  \resumeSubHeadingListStart
+((% for exp in resume.experience.experiences -%))
+
+    \resumeSubheading
+      {(( exp.position ))}{(( exp.start_date )) - (( exp.end_date ))}
+      {(( exp.company ))}{(( exp.location ))}
+((% if exp.bullet_points -%))
+      \resumeItemListStart
+((% for bullet in exp.bullet_points -%))
+        \resumeItem{(( bullet | tex_bold ))}
+((% endfor -%))
+      \resumeItemListEnd
+((% endif -%))
+((% endfor -%))
+  \resumeSubHeadingListEnd
