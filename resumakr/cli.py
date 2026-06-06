@@ -79,6 +79,7 @@ def template():
     import jinja2
     from resumakr.schemas import Resume
 
+    start = perf_counter()
     root = Path(ROOT_DIR)
     resume_path = root / "resume.yaml"
 
@@ -116,7 +117,8 @@ def template():
 
     out = root / "resume.tex"
     out.write_text(rendered)
-    typer.echo(f"Written to {out}")
+    end = perf_counter()
+    typer.echo(f"Written to {out} in {(end - start) * 1000:.2f} ms.")
 
 
 @app.command()
@@ -124,6 +126,29 @@ def build():
     """Template and compile resume.yaml → resume.tex → resume.pdf."""
     template()
     compile()
+
+
+@app.command()
+def autobuild():
+    """Watch resume.yaml and rebuild on every change (250ms debounce)."""
+    import asyncio
+    from watchfiles import awatch
+
+    root = Path(ROOT_DIR)
+    resume_path = root / "resume.yaml"
+
+    async def _run():
+        typer.echo(f"Watching {resume_path} ... (Ctrl+C to stop)")
+        async for _ in awatch(resume_path, debounce=250):
+            try:
+                build()
+            except SystemExit:
+                pass
+
+    try:
+        asyncio.run(_run())
+    except KeyboardInterrupt:
+        typer.echo("Stopped.")
 
 
 @app.command()
