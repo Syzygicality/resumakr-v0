@@ -7,7 +7,10 @@ import yaml
 from pathlib import Path
 from time import perf_counter
 
+from resumakr.src.schemas.cli import app as schema_app
+
 app = typer.Typer(help="Resumakr CLI")
+app.add_typer(schema_app, name="schema", help="Schema-related commands.")
 
 ROOT_DIR = subprocess.run(
     ["git", "rev-parse", "--show-toplevel"],
@@ -40,44 +43,10 @@ def precommit():
 
 
 @app.command()
-def schema():
-    """Generate resume.schema.json from the Resume model."""
-    import json
-    from resumakr.schemas import Resume
-
-    root = Path(ROOT_DIR)
-    schema_path = root / "resumakr" / "resume.schema.json"
-    schema_path.write_text(json.dumps(Resume.model_json_schema(), indent=2) + "\n")
-    typer.echo(f"Written to {schema_path}")
-
-
-@app.command()
-def validate(
-    resume: Path = typer.Argument(
-        Path("resume.yaml"), help="Path to the YAML resume file."
-    ),
-):
-    """Validate a YAML resume file against the Resume schema."""
-    from resumakr.schemas import Resume
-
-    if not resume.exists():
-        typer.echo(f"Error: {resume} not found", err=True)
-        raise typer.Exit(1)
-
-    raw = yaml.safe_load(resume.read_text())
-    try:
-        Resume.model_validate(raw)
-        typer.echo(f"{resume} is valid.")
-    except Exception as exc:
-        typer.echo(f"Validation error:\n{exc}", err=True)
-        raise typer.Exit(1)
-
-
-@app.command()
 def template():
     """Render resume.tex from resume.yaml at the repo root."""
     import jinja2
-    from resumakr.schemas import Resume
+    from resumakr.src.schemas.schemas import Resume
 
     start = perf_counter()
     root = Path(ROOT_DIR)
@@ -94,7 +63,7 @@ def template():
         typer.echo(f"Validation error:\n{exc}", err=True)
         raise typer.Exit(1)
 
-    templates_dir = Path(__file__).parent / "templates"
+    templates_dir = Path(__file__).parent.parent / "templates"
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(str(templates_dir)),
         block_start_string="((%",
@@ -106,9 +75,9 @@ def template():
         trim_blocks=True,
         lstrip_blocks=True,
     )
-    # Bold conversion is already done by BulletPointMixin at validation time;
-    # this filter only needs to escape bare % signs for LaTeX.
-    env.filters["tex_bold"] = lambda s: re.sub(r"(?<!\\)%", r"\\%", str(s))
+    env.filters["tex_bold"] = lambda s: re.sub(
+        r"(?<!\\)%", r"\\%", str(s)
+    )  # this filter only needs to escape bare % signs for LaTeX.
     env.filters["display_url"] = lambda url: re.sub(
         r"^https?://(www\.)?", "", str(url)
     ).rstrip("/")
@@ -119,6 +88,32 @@ def template():
     out.write_text(rendered)
     end = perf_counter()
     typer.echo(f"Written to {out} in {(end - start) * 1000:.2f} ms.")
+
+
+@app.command()
+def compile():
+    """Compile resume.tex via the local LaTeX API and write resume.pdf."""
+    start = perf_counter()
+    root = Path(ROOT_DIR)
+    tex_path = root / "resume.tex"
+    pdf_path = root / "resume.pdf"
+
+    if not tex_path.exists():
+        typer.echo(f"Error: {tex_path} not found", err=True)
+        raise typer.Exit(1)
+
+    source = tex_path.read_text()
+    response = httpx.post("http://localhost:8000/compile", json={"source": source})
+
+    if response.status_code != 200:
+        typer.echo(
+            f"Compile error:\n{response.json().get('detail', response.text)}", err=True
+        )
+        raise typer.Exit(1)
+
+    pdf_path.write_bytes(response.content)
+    end = perf_counter()
+    typer.echo(f"Written to {pdf_path} in {(end - start) * 1000:.2f} ms.")
 
 
 @app.command()
@@ -149,32 +144,6 @@ def autobuild():
         asyncio.run(_run())
     except KeyboardInterrupt:
         typer.echo("Stopped.")
-
-
-@app.command()
-def compile():
-    """Compile resume.tex via the local LaTeX API and write resume.pdf."""
-    start = perf_counter()
-    root = Path(ROOT_DIR)
-    tex_path = root / "resume.tex"
-    pdf_path = root / "resume.pdf"
-
-    if not tex_path.exists():
-        typer.echo(f"Error: {tex_path} not found", err=True)
-        raise typer.Exit(1)
-
-    source = tex_path.read_text()
-    response = httpx.post("http://localhost:8000/compile", json={"source": source})
-
-    if response.status_code != 200:
-        typer.echo(
-            f"Compile error:\n{response.json().get('detail', response.text)}", err=True
-        )
-        raise typer.Exit(1)
-
-    pdf_path.write_bytes(response.content)
-    end = perf_counter()
-    typer.echo(f"Written to {pdf_path} in {(end - start) * 1000:.2f} ms.")
 
 
 if __name__ == "__main__":

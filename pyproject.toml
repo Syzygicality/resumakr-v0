@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-resumakr = "resumakr.cli:app"
+resumakr = "resumakr.src.cli:app"
 
 [build-system]
 requires = ["hatchling"]
