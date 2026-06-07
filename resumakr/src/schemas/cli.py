@@ -1,5 +1,5 @@
 import typer
-import yaml
+from ruamel.yaml import YAML
 import subprocess
 
 from pathlib import Path
@@ -36,7 +36,7 @@ def validate():
         typer.echo(f"Error: {resume} not found", err=True)
         raise typer.Exit(1)
 
-    raw = yaml.safe_load(resume.read_text())
+    raw = YAML().load(resume.read_text())
     try:
         Resume.model_validate(raw)
         typer.echo(f"{resume} is valid.")

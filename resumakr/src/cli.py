@@ -2,7 +2,7 @@ import re
 import typer
 import subprocess
 import httpx
-import yaml
+from ruamel.yaml import YAML
 
 from pathlib import Path
 from time import perf_counter
@@ -56,7 +56,7 @@ def template():
         typer.echo(f"Error: {resume_path} not found", err=True)
         raise typer.Exit(1)
 
-    raw = yaml.safe_load(resume_path.read_text())
+    raw = YAML().load(resume_path.read_text())
     try:
         validated = Resume.model_validate(raw)
     except Exception as exc:
