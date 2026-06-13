@@ -111,4 +111,5 @@ class ResumeContent(BaseModel):
 
 
 class Resume(BaseModel):
+    label: str
     resume: ResumeContent

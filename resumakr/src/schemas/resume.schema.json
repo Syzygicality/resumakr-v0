@@ -503,11 +503,16 @@
     }
   },
   "properties": {
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
     "resume": {
       "$ref": "#/$defs/ResumeContent"
     }
   },
   "required": [
+    "label",
     "resume"
   ],
   "title": "Resume",

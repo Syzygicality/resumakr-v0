@@ -1,3 +1,4 @@
+label: master
 resume:
   name: Eddie Wang
   phone_number: (587) 575-9291
@@ -96,13 +97,6 @@ resume:
       - position: Application Programmer
         company: Ontario Government (MPBSDP)
         location: Toronto, ON
-        start_date: May 2026
-        end_date: Present
-        bullet_points: []
-
-      - position: Data Engineering Contractor
-        company: Imperial Oil (Exxon Mobil subsid.)
-        location: Remote
         start_date: May 2026
         end_date: Present
         bullet_points: []
