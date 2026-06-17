@@ -17,3 +17,28 @@ def list_resumes(db: Connection) -> list[dict]:
         """
     ).fetchall()
     return [dict(row) for row in rows]
+
+
+@get_db
+def save_resume(db: Connection, label: str, content: str, tags: list[str]) -> None:
+    db.execute(
+        """
+        INSERT INTO resumes (label, content)
+        VALUES (?, ?)
+        ON CONFLICT(label) DO UPDATE
+            SET content    = excluded.content,
+                updated_at = datetime('now')
+        """,
+        (label, content),
+    )
+    resume_id = db.execute(
+        "SELECT id FROM resumes WHERE label = ?", (label,)
+    ).fetchone()[0]
+
+    for name in tags:
+        db.execute("INSERT OR IGNORE INTO tags (name) VALUES (?)", (name,))
+        tag_id = db.execute("SELECT id FROM tags WHERE name = ?", (name,)).fetchone()[0]
+        db.execute(
+            "INSERT OR IGNORE INTO resume_tags (resume_id, tag_id) VALUES (?, ?)",
+            (resume_id, tag_id),
+        )

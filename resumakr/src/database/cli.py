@@ -1,11 +1,23 @@
+import subprocess
+from pathlib import Path
+from typing import Annotated
+
 import typer
 from rich.console import Console
 from rich.table import Table
+from ruamel.yaml import YAML
 
-from resumakr.src.database.crud import list_resumes
+from resumakr.src.database.crud import list_resumes, save_resume
 
 app = typer.Typer()
 console = Console()
+
+ROOT_DIR = subprocess.run(
+    ["git", "rev-parse", "--show-toplevel"],
+    check=True,
+    capture_output=True,
+    text=True,
+).stdout.strip()
 
 
 @app.command()
@@ -34,3 +46,36 @@ def list():
         )
 
     console.print(table)
+
+
+@app.command(
+    context_settings={"allow_extra_args": True, "ignore_unknown_options": True}
+)
+def save(
+    ctx: typer.Context,
+    has_tags: Annotated[
+        bool,
+        typer.Option(
+            "--tags", "-t", is_flag=True, help="Tag names follow: -t tag1 tag2 ..."
+        ),
+    ] = False,
+):
+    """Save resume.yaml into the database as a revertible snapshot."""
+    tags = ctx.args if has_tags else []
+
+    resume_path = Path(ROOT_DIR) / "resume.yaml"
+
+    if not resume_path.exists():
+        typer.echo(f"Error: {resume_path} not found", err=True)
+        raise typer.Exit(1)
+
+    content = resume_path.read_text()
+    raw = YAML().load(content)
+    label = raw.get("label")
+
+    if not label:
+        typer.echo("Error: resume.yaml has no 'label' field", err=True)
+        raise typer.Exit(1)
+
+    save_resume(label, content, tags)
+    typer.echo(f"Saved '{label}'." + (f" Tags: {', '.join(tags)}" if tags else ""))
