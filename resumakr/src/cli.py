@@ -8,9 +8,12 @@ from pathlib import Path
 from time import perf_counter
 
 from resumakr.src.schemas.cli import app as schema_app
+from resumakr.src.database.cli import app as database_app
 
 app = typer.Typer(help="Resumakr CLI")
+app.add_typer(database_app)
 app.add_typer(schema_app, name="schema", help="Schema-related commands.")
+
 
 ROOT_DIR = subprocess.run(
     ["git", "rev-parse", "--show-toplevel"],
@@ -20,7 +23,7 @@ ROOT_DIR = subprocess.run(
 ).stdout.strip()
 
 
-@app.command()
+@app.command(hidden=True)
 def clean():
     """Automatically remove metadata directories. (.ruff_cache, __pycache__)"""
     root = Path(ROOT_DIR)
@@ -33,7 +36,7 @@ def clean():
             subprocess.run(["rm", "-r", str(pycache)], check=True)
 
 
-@app.command()
+@app.command(hidden=True)
 def precommit():
     """Install and run pre-commit hooks on all files."""
     subprocess.run(["pre-commit", "install"], check=True)

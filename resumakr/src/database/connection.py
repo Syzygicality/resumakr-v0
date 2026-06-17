@@ -11,26 +11,26 @@ def get_connection() -> sqlite3.Connection:
     return conn
 
 
-def inject_connection(fn):
+def get_db(fn):
     """
     Inject a sqlite3.Connection as the first argument of a CRUD function.
 
-    The wrapped function must declare `conn` as its first parameter.
+    The wrapped function must declare `db` as its first parameter.
     A fresh connection is opened before the call and closed (with commit
     on success, rollback on error) afterwards.
     """
 
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
-        conn = get_connection()
+        db = get_connection()
         try:
-            result = fn(conn, *args, **kwargs)
-            conn.commit()
+            result = fn(db, *args, **kwargs)
+            db.commit()
             return result
         except Exception:
-            conn.rollback()
+            db.rollback()
             raise
         finally:
-            conn.close()
+            db.close()
 
     return wrapper
