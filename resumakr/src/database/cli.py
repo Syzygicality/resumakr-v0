@@ -7,7 +7,7 @@ from rich.console import Console
 from rich.table import Table
 from ruamel.yaml import YAML
 
-from resumakr.src.database.connection import init_db
+from resumakr.src.database.connection import get_connection, init_db
 from resumakr.src.database.crud import (
     delete_resume,
     find_resumes_by_label,
@@ -156,3 +156,34 @@ def remove(
     typer.confirm(f"Remove '{resume['label']}'?", abort=True)
     delete_resume(resume["label"])
     typer.echo(f"Removed '{resume['label']}'.")
+
+
+@app.command(hidden=True)
+def sql(
+    query: Annotated[str, typer.Argument(help="Raw SQL to execute.")],
+):
+    """Execute raw SQL against resumakr.db (dev only)."""
+    db = get_connection()
+    try:
+        cursor = db.execute(query)
+        db.commit()
+    except Exception as e:
+        typer.echo(f"Error: {e}", err=True)
+        db.close()
+        raise typer.Exit(1)
+
+    rows = cursor.fetchall()
+    if not rows:
+        typer.echo(f"{cursor.rowcount} row(s) affected.")
+        db.close()
+        return
+
+    columns = [d[0] for d in cursor.description]
+    table = Table(show_header=True, header_style="bold")
+    for col in columns:
+        table.add_column(col)
+    for row in rows:
+        table.add_row(*[str(v) if v is not None else "NULL" for v in row])
+
+    console.print(table)
+    db.close()
