@@ -7,6 +7,7 @@ from rich.console import Console
 from rich.table import Table
 from ruamel.yaml import YAML
 
+from resumakr.src.database.connection import init_db
 from resumakr.src.database.crud import (
     delete_resume,
     find_resumes_by_label,
@@ -23,6 +24,16 @@ ROOT_DIR = subprocess.run(
     capture_output=True,
     text=True,
 ).stdout.strip()
+
+
+@app.command("init-db")
+def init_db_cmd():
+    """Create resumakr.db with the current schema if it does not exist."""
+    created = init_db()
+    if created:
+        typer.echo("Created resumakr.db.")
+    else:
+        typer.echo("resumakr.db already exists, nothing to do.")
 
 
 @app.command()
