@@ -7,7 +7,12 @@ from rich.console import Console
 from rich.table import Table
 from ruamel.yaml import YAML
 
-from resumakr.src.database.crud import find_resumes_by_label, list_resumes, save_resume
+from resumakr.src.database.crud import (
+    delete_resume,
+    find_resumes_by_label,
+    list_resumes,
+    save_resume,
+)
 
 app = typer.Typer()
 console = Console()
@@ -32,16 +37,16 @@ def list():
     table = Table(show_header=True, header_style="bold")
     table.add_column("ID", style="dim", width=4)
     table.add_column("Label")
-    table.add_column("Created At")
     table.add_column("Updated At")
+    table.add_column("Created At")
     table.add_column("Tags")
 
     for r in resumes:
         table.add_row(
             str(r["id"]),
             r["label"],
-            r["created_at"],
             r["updated_at"],
+            r["created_at"],
             r["tags"] or "-",
         )
 
@@ -110,3 +115,33 @@ def load(
     from resumakr.src.cli import build
 
     build()
+
+
+@app.command()
+def remove(
+    label: Annotated[
+        str, typer.Argument(help="Label (or substring) of the resume to remove.")
+    ],
+):
+    """Remove a saved resume entry by label."""
+    matches = find_resumes_by_label(label)
+
+    if not matches:
+        typer.echo(f"Error: no resume found matching '{label}'", err=True)
+        raise typer.Exit(1)
+
+    if len(matches) > 1:
+        exact = [m for m in matches if m["label"] == label]
+        if exact:
+            resume = exact[0]
+        else:
+            typer.echo(f"Error: '{label}' matches multiple resumes:", err=True)
+            for m in matches:
+                typer.echo(f"  {m['label']}", err=True)
+            raise typer.Exit(1)
+    else:
+        resume = matches[0]
+
+    typer.confirm(f"Remove '{resume['label']}'?", abort=True)
+    delete_resume(resume["label"])
+    typer.echo(f"Removed '{resume['label']}'.")

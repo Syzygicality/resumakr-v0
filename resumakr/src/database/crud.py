@@ -29,6 +29,11 @@ def find_resumes_by_label(db: Connection, substring: str) -> list[dict]:
 
 
 @get_db
+def delete_resume(db: Connection, label: str) -> None:
+    db.execute("DELETE FROM resumes WHERE label = ?", (label,))
+
+
+@get_db
 def save_resume(db: Connection, label: str, content: str, tags: list[str]) -> None:
     db.execute(
         """
