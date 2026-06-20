@@ -20,6 +20,15 @@ def list_resumes(db: Connection) -> list[dict]:
 
 
 @get_db
+def find_resumes_by_label(db: Connection, substring: str) -> list[dict]:
+    rows = db.execute(
+        "SELECT label, content FROM resumes WHERE label LIKE ?",
+        (f"%{substring}%",),
+    ).fetchall()
+    return [dict(row) for row in rows]
+
+
+@get_db
 def save_resume(db: Connection, label: str, content: str, tags: list[str]) -> None:
     db.execute(
         """
